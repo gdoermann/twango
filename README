@@ -1,0 +1,12 @@
+django-twisted
+This is a library that contains a custom queryset and a custom manager that adds introspection to use
+the twisted database api instead of django.  It returns deferred instead of just hitting the database.
+
+To install:
+
+1. Run python setup.py
+
+2. Import and set the manager as the manager for any model
+
+This will keep the orm from blocking.  If you select a related object it will still use the django orm,
+not twisted.  This functionality will hopefully be added soon.
