@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 from django.db.models.sql.query import Query
-from dwisted import connections
+from dwisted.dbapi import connections
 
 class TwistedQuerySet(QuerySet):
     """ Methods:
