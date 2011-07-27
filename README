@@ -8,5 +8,43 @@ To install:
 
 2. Import and set the manager as the manager for any model
 
-This will keep the orm from blocking.  If you select a related object it will still use the django orm,
-not twisted.  This functionality will hopefully be added soon.
+This will keep the orm from blocking when using the django orm!
+
+Example:
+
+You can create models that are separate to be used in twisted processes:
+
+from myapp import Book
+from twango.manager import TwistedManager
+from django.db.models.manager import Manager
+
+class TwistedBook(Book):
+    objects = Manager()
+    twisted = TwistedManager()
+
+    class Meta:
+        app_label = 'myapp'
+        proxy = True
+
+
+Then you can use the twisted manager like you would with the regular manager... just with callbacks!
+
+def count_me(count):
+    print "Count: %s" % count
+
+def all(queryset):
+    print 'All: %s' % queryset
+
+def none(queryset):
+    print 'None: %s' % queryset
+
+def callback(*args, **kwargs):
+    Book.twisted.count(success_callback=count_me)
+    Book.twisted.all(success_callback=all)
+    Book.twisted.none(success_callback=none)
+
+d = Deferred()
+d.addCallback(callback)
+d.callback(None)
+
+reactor.run()
