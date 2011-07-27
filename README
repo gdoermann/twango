@@ -1,4 +1,4 @@
-twango
+twango = Django ORM + Twisted - Blocking
 This is a library that contains a custom queryset and a custom manager that adds introspection to use
 the twisted database api instead of django.  It returns deferred instead of just hitting the database.
 
