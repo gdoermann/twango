@@ -43,16 +43,16 @@ for dirpath, dirnames, filenames in os.walk(dwisted_dir):
 version = __import__('dwisted').get_version()
 
 setup(
-    name='django-twisted',
+    name='twango',
     version='0.1.0',
     description="""Django QuerySets that can be Twisted aware.
     Adds several methods on a custom manager and queryset that return deferreds.
     """,
-    url='https://github.com/gdoermann/django-twisted',
+    url='https://github.com/gdoermann/twango',
     author='Gregory Doermann',
     author_email='dev@doermann.me',
-    download_url='https://github.com/gdoermann/django-twisted/raw/master/django-twisted-0.1.0.tar.gz',
-    license='https://github.com/gdoermann/django-twisted/blob/master/MIT-LICENSE.txt',
+    download_url='https://github.com/gdoermann/twango/raw/master/twango-0.1.0.tar.gz',
+    license='https://github.com/gdoermann/twango/blob/master/MIT-LICENSE.txt',
     platform=['Any'],
     packages=packages,
     data_files = data_files,
