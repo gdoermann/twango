@@ -1,7 +1,8 @@
-from django.db.models.query import QuerySet
+from twisted.internet import defer
+from django.db.models.query import QuerySet, ITER_CHUNK_SIZE
 from django.db.models.sql.query import Query
 from twango.db import connections
-from twango.decorators import call_in_thread
+from twango.decorators import call_in_thread, call_in_thread_ignore_return
 
 
 class TwistedQuery(Query):
@@ -46,7 +47,7 @@ class TwistedQuerySet(QuerySet):
             raise ValueError('You must specify a success_callback')
         @call_in_thread(success_callback, error_callback)
         def function():
-            getattr(super(TwistedQuerySet, self), name)(*args, **kwargs)
+            return getattr(super(TwistedQuerySet, self), name)(*args, **kwargs)
         return function()
 
     def _clone(self, klass=None, setup=False, **kwargs):
@@ -57,6 +58,9 @@ class TwistedQuerySet(QuerySet):
 
     def all(self, **kwargs):
         return self._super_threaded('all', **kwargs)
+
+    def none(self, **kwargs):
+        return self._super_threaded('none', **kwargs)
 
     def count(self, **kwargs):
         return self._super_threaded('count', **kwargs)
@@ -72,7 +76,6 @@ class TwistedQuerySet(QuerySet):
 
     def update(self, values, **kwargs):
         return self._super_threaded('update', values, **kwargs)
-
 
     def in_bulk(self, id_list, **kwargs):
         return self._super_threaded('in_bulk', id_list, **kwargs)
