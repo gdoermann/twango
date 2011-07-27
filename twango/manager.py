@@ -1,7 +1,7 @@
 from django.db import models
 from twango.query import TwistedQuerySet
 
-class CustomManager(models.Manager):
+class TwistedManager(models.Manager):
     queryset_class = TwistedQuerySet
 
     def get_query_set(self):
