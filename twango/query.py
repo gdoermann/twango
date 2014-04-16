@@ -1,8 +1,7 @@
-from twisted.internet import defer
-from django.db.models.query import QuerySet, ITER_CHUNK_SIZE
+from django.db.models.query import QuerySet
 from django.db.models.sql.query import Query
 from twango.db import connections
-from twango.decorators import call_in_thread, call_in_thread_ignore_return
+from twango.decorators import call_in_thread
 
 
 class TwistedQuery(Query):
