@@ -1,9 +1,10 @@
 twango = Django ORM + Twisted - Blocking
+----------------------------------------
 This is a library that contains a custom queryset and a custom manager that adds introspection to use
 the twisted database api instead of django.  It returns deferred instead of just hitting the database.
 
 To install:
-
+-----------
 1. Run python setup.py
 
 2. Import and set the manager as the manager for any model
@@ -11,9 +12,10 @@ To install:
 This will keep the orm from blocking when using the django orm!
 
 Example:
-
+--------
 You can create models that are separate to be used in twisted processes:
 
+```python
 from myapp import Book
 from twango.manager import TwistedManager
 from django.db.models.manager import Manager
@@ -25,10 +27,11 @@ class TwistedBook(Book):
     class Meta:
         app_label = 'myapp'
         proxy = True
-
+```
 
 Then you can use the twisted manager like you would with the regular manager... just with callbacks!
 
+```python
 def count_me(count):
     print "Count: %s" % count
 
@@ -48,3 +51,4 @@ d.addCallback(callback)
 d.callback(None)
 
 reactor.run()
+```
