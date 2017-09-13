@@ -20,9 +20,9 @@ class TwistedQuery(Query):
 
 
 class TwistedQuerySet(QuerySet):
-    def __init__(self, model=None, query=None, using=None):
+    def __init__(self, model=None, query=None, using=None, hints=None):
         query = query or TwistedQuery(model)
-        super(TwistedQuerySet, self).__init__(model=model, query=query, using=using)
+        super(TwistedQuerySet, self).__init__(model=model, query=query, using=using, hints=hints)
         self.success_callback = None
         self.error_callback = None
 
@@ -44,6 +44,7 @@ class TwistedQuerySet(QuerySet):
         error_callback = kwargs.pop('error_callback', self.error_callback)
         if not success_callback:
             raise ValueError('You must specify a success_callback')
+
         @call_in_thread(success_callback, error_callback)
         def function():
             return getattr(super(TwistedQuerySet, self), name)(*args, **kwargs)
