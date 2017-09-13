@@ -2,10 +2,14 @@ from django.db.models.query import QuerySet
 from django.db.models.sql.query import Query
 from twango.db import connections
 from twango.decorators import call_in_thread
+from twisted.internet import threads
 
 
 class TwistedQuery(Query):
     def twisted_compiler(self, using=None, connection=None):
+        """
+        !!! NOT YET USED
+        """
         if using is None and connection is None:
             raise ValueError("Need either using or connection")
         if using:
@@ -20,14 +24,15 @@ class TwistedQuery(Query):
 
 
 class TwistedQuerySet(QuerySet):
-    def __init__(self, model=None, query=None, using=None):
+    def __init__(self, model=None, query=None, using=None, hints=None):
         query = query or TwistedQuery(model)
-        super(TwistedQuerySet, self).__init__(model=model, query=query, using=using)
+        super(TwistedQuerySet, self).__init__(model=model, query=query, using=using, hints=hints)
         self.success_callback = None
         self.error_callback = None
 
     def twist(self):
         """
+        !!! NOT YET USED
         Use twisted database api to run the query and return the raw results in a deferred
         """
         query = self.query
@@ -42,8 +47,7 @@ class TwistedQuerySet(QuerySet):
     def _super_threaded(self, name, *args, **kwargs):
         success_callback = kwargs.pop('success_callback', self.success_callback)
         error_callback = kwargs.pop('error_callback', self.error_callback)
-        if not success_callback:
-            raise ValueError('You must specify a success_callback')
+
         @call_in_thread(success_callback, error_callback)
         def function():
             return getattr(super(TwistedQuerySet, self), name)(*args, **kwargs)
@@ -52,10 +56,11 @@ class TwistedQuerySet(QuerySet):
     def _clone(self, klass=None, setup=False, **kwargs):
         self.success_callback = kwargs.pop('success_callback', self.success_callback)
         self.error_callback = kwargs.pop('error_callback', self.error_callback)
-        clone = super(TwistedQuerySet, self)._clone(klass, setup, **kwargs)
-        return clone
+        return super(TwistedQuerySet, self)._clone(**kwargs)
 
     def all(self, **kwargs):
+        # not working in django 1.11+
+        # go to TwistedManager
         return self._super_threaded('all', **kwargs)
 
     def none(self, **kwargs):

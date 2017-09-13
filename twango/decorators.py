@@ -19,10 +19,12 @@ def call_in_thread_ignore_return(function):
                 'error_msg': failure.getErrorMessage(),
             })
         d.addErrback(error)
+        # returning defered so user can do what he wants
+        return d
     return threaded
 
 
-def call_in_thread(success_callback, error_callback=None):
+def call_in_thread(success_callback=None, error_callback=None):
     """
     Decorator: Calls the decorated function in a thread.
 
@@ -33,7 +35,7 @@ def call_in_thread(success_callback, error_callback=None):
 
     Any errors will be logged using Python's logging module.
     """
-    if not callable(success_callback):
+    if success_callback is not None and not callable(success_callback):
         raise ValueError("success_callback must be callable")
     def new(function):
         if success_callback == function:
@@ -49,7 +51,12 @@ def call_in_thread(success_callback, error_callback=None):
                 })
                 if callable(error_callback):
                     error_callback(failure)
-            d.addCallback(success_callback).addErrback(error)
+
+            if success_callback is not None:
+                d.addCallback(success_callback)
+            d.addErrback(error)
+            # returning defered so user can do what he wants
+            return d
         return threaded
     return new
 
