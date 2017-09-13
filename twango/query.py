@@ -2,10 +2,14 @@ from django.db.models.query import QuerySet
 from django.db.models.sql.query import Query
 from twango.db import connections
 from twango.decorators import call_in_thread
+from twisted.internet import threads
 
 
 class TwistedQuery(Query):
     def twisted_compiler(self, using=None, connection=None):
+        """
+        !!! NOT YET USED
+        """
         if using is None and connection is None:
             raise ValueError("Need either using or connection")
         if using:
@@ -28,6 +32,7 @@ class TwistedQuerySet(QuerySet):
 
     def twist(self):
         """
+        !!! NOT YET USED
         Use twisted database api to run the query and return the raw results in a deferred
         """
         query = self.query
@@ -42,8 +47,6 @@ class TwistedQuerySet(QuerySet):
     def _super_threaded(self, name, *args, **kwargs):
         success_callback = kwargs.pop('success_callback', self.success_callback)
         error_callback = kwargs.pop('error_callback', self.error_callback)
-        if not success_callback:
-            raise ValueError('You must specify a success_callback')
 
         @call_in_thread(success_callback, error_callback)
         def function():
@@ -53,10 +56,11 @@ class TwistedQuerySet(QuerySet):
     def _clone(self, klass=None, setup=False, **kwargs):
         self.success_callback = kwargs.pop('success_callback', self.success_callback)
         self.error_callback = kwargs.pop('error_callback', self.error_callback)
-        clone = super(TwistedQuerySet, self)._clone(klass, setup, **kwargs)
-        return clone
+        return super(TwistedQuerySet, self)._clone(**kwargs)
 
     def all(self, **kwargs):
+        # not working in django 1.11+
+        # go to TwistedManager
         return self._super_threaded('all', **kwargs)
 
     def none(self, **kwargs):
